@@ -1,37 +1,38 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { searchMovies } from '../../services/themoviedbAPI';
 import MovieList from '../../components/MovieList/MovieList';
+import SearchBar from '../../components/SearchBar/SearchBar';
 import s from './MoviesPage.module.css';
 
 const MoviesPage = () => {
-  const [query, setQuery] = useState('');
   const [movies, setMovies] = useState([]);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const query = searchParams.get('query') || '';
 
-  const handleSubmit = async e => {
-    e.preventDefault();
-    if (!query.trim()) return;
-    try {
+  useEffect(() => {
+    const getSearchQuery = async () => {
+      if (!query) return;
       const data = await searchMovies(query);
-      setMovies(data);
-    } catch (error) {
-      console.error(error);
+      const searchedMovies = data?.filter(movie =>
+        movie.title.toLowerCase().includes(query.toLowerCase())
+      );
+      setMovies(searchedMovies);
+    };
+    getSearchQuery();
+  }, [query]);
+
+  const handleSearchSubmit = newQuery => {
+    if (!newQuery) {
+      return setSearchParams({});
     }
+
+    setSearchParams({ query: newQuery });
   };
 
   return (
     <div className={s.container}>
-      <form onSubmit={handleSubmit} className={s.form}>
-        <input
-          type="text"
-          value={query}
-          onChange={e => setQuery(e.target.value)}
-          placeholder="Search movies"
-          className={s.input}
-        />
-        <button type="submit" className={s.button}>
-          Search
-        </button>
-      </form>
+      <SearchBar onSubmit={handleSearchSubmit} />
       <MovieList movies={movies} />
     </div>
   );

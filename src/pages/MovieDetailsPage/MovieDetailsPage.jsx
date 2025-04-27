@@ -1,11 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
-import { useParams, Link, Outlet, useLocation } from 'react-router-dom';
+import { Suspense, useEffect, useRef, useState } from 'react';
+import {
+  useParams,
+  Link,
+  NavLink,
+  Outlet,
+  useLocation,
+} from 'react-router-dom';
 import { fetchMovieDetails } from '../../services/themoviedbAPI';
-import { lazy, Suspense } from 'react';
-const MovieCast = lazy(() => import('../../components/MovieCast/MovieCast'));
-const MovieReviews = lazy(() =>
-  import('../../components/MovieReviews/MovieReviews')
-);
 import s from './MovieDetailsPage.module.css';
 
 const MovieDetailsPage = () => {
@@ -16,14 +17,14 @@ const MovieDetailsPage = () => {
   const [movie, setMovie] = useState(null);
 
   useEffect(() => {
-    async function getMovieDetails() {
+    const getMovieDetails = async () => {
       try {
         const data = await fetchMovieDetails(movieId);
         setMovie(data);
       } catch (error) {
         console.error(error);
       }
-    }
+    };
     getMovieDetails();
   }, [movieId]);
 
@@ -34,7 +35,7 @@ const MovieDetailsPage = () => {
   const { title, overview, genres, poster_path } = movie;
   const imageUrl = poster_path
     ? `https://image.tmdb.org/t/p/w500${poster_path}`
-    : 'https://via.placeholder.com/300x450?text=No+Image';
+    : 'https://placehold.co/600x400';
 
   return (
     <div className={s.container}>
@@ -58,15 +59,17 @@ const MovieDetailsPage = () => {
         <h3>Additional information</h3>
         <ul>
           <li>
-            <Link to="cast">Cast</Link>
+            <NavLink to="cast">Cast</NavLink>
           </li>
           <li>
-            <Link to="reviews">Reviews</Link>
+            <NavLink to="reviews">Reviews</NavLink>
           </li>
         </ul>
       </div>
 
-      <Outlet />
+      <Suspense fallback="Loading">
+        <Outlet />
+      </Suspense>
     </div>
   );
 };
