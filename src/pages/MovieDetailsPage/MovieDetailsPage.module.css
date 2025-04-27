@@ -1,0 +1,25 @@
+.container {
+  padding: 20px;
+}
+
+.backLink {
+  display: inline-block;
+  margin-bottom: 20px;
+  text-decoration: none;
+  color: blue;
+}
+
+.details {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.poster {
+  width: 300px;
+}
+
+.additional ul {
+  list-style: none;
+  padding: 0;
+}
