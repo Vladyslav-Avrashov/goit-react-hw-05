@@ -1,4 +1,3 @@
-// src/services/moviesApi.js
 import axios from 'axios';
 
 const ACCESS_TOKEN =
